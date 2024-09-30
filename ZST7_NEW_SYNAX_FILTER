@@ -1,0 +1,51 @@
+*&---------------------------------------------------------------------*
+*& Report ZST7_NEW_SYNAX_FILTER
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+report zst7_new_synax_filter.
+
+types : begin of tp_blart,
+          blart type bsik-blart,
+        end of tp_blart,
+        tt_blart type hashed table of tp_blart with unique key blart.
+data : gt_bsik      type standard table of bsik with non-unique  sorted key blart components blart,
+       gt_bsik_re   type standard table of bsik,
+       gt_bsik_rall type standard table of bsik,
+       gt_bsik_x    type standard table of bsik,
+       gt_blart     type tt_blart.
+
+select * from bsik into table gt_bsik up to 1000 rows where gjahr = '2022'.
+" doc type RE
+gt_bsik_re = filter #( gt_bsik using key blart where blart = 'RE' ).
+
+" non RE doc type.
+gt_bsik_rall = filter #( gt_bsik except using key blart where blart = 'RE' ).
+
+"add the filter values
+gt_blart = value tt_blart(
+                          ( blart = 'XR' )
+                          ( blart = 'XP' )
+                          ( blart = 'AT' )
+                          ).
+gt_bsik_x = filter #( gt_bsik in gt_blart where blart = blart ).
+
+"different ways of exclude fields from output: possible also in method =>display
+call method cl_demo_output=>write
+  exporting
+    data    = gt_bsik
+          name = 'GT_BSIK'
+    exclude = 'UMSK, SUMSK, ZAUGDT, AUGBL, ZUONR, GJAHR, BELNR, UZEI, BUDAT, BLDAT,UMSKS,UMSKZ'.
+
+"cl_demo_output=>write( gt_bsik).
+cl_demo_output=>write( data = gt_bsik_re name = 'GT_BSIK_RE' exclude =
+       'UMSK, SUMSK, ZAUGDT, AUGBL, ZUONR, GJAHR, BELNR, UZEI, BUDAT, BLDAT,UMSKS,UMSKZ' ).
+cl_demo_output=>write( data = gt_bsik_rall name = 'GT_BSIK_RALL' exclude =
+      'UMSK, SUMSK, ZAUGDT, AUGBL, ZUONR, GJAHR, BELNR, UZEI, BUDAT, BLDAT,UMSKS,UMSKZ' ).
+cl_demo_output=>write( data = gt_blart name = 'GT_BLART' exclude =
+       'UMSK, SUMSK, ZAUGDT, AUGBL, ZUONR, GJAHR, BELNR, UZEI, BUDAT, BLDAT,UMSKS,UMSKZ').
+cl_demo_output=>write( data = gt_bsik_x name = 'GT_BSIK_X' exclude =
+       'UMSK, SUMSK, ZAUGDT, AUGBL, ZUONR, GJAHR, BELNR, UZEI, BUDAT, BLDAT,UMSKS,UMSKZ').
+cl_demo_output=>display( ).
+
+break-point.
