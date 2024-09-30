@@ -48,4 +48,4 @@ cl_demo_output=>write( data = gt_bsik_x name = 'GT_BSIK_X' exclude =
        'UMSK, SUMSK, ZAUGDT, AUGBL, ZUONR, GJAHR, BELNR, UZEI, BUDAT, BLDAT,UMSKS,UMSKZ').
 cl_demo_output=>display( ).
 
-break-point.
+
