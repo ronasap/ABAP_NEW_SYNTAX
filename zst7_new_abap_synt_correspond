@@ -1,0 +1,38 @@
+report zst7_new_abap_synt_correspond.
+
+types : begin of tp_itab1,
+          ebeln type ekko-ebeln,
+          bukrs type ekko-bukrs,
+          bsart type ekko-bsart,
+          lifnr type ekko-lifnr,
+        end of tp_itab1,
+
+        begin of tp_itab2,
+          ebeln   type ekko-ebeln,
+          company type ekko-bukrs,
+          plant   type   ekpo-werks,
+          bsart   type ekko-bsart,
+          vendor  type ekko-lifnr,
+        end of tp_itab2.
+data : gt_itab1 type standard table of tp_itab1,
+       gt_itab2 type standard table of tp_itab2,
+       gt_itab3 type standard table of tp_itab2,
+       gt_itab4 type standard table of tp_itab2.
+
+select ebeln bukrs bsart lifnr from ekko into table gt_itab1 up to 5 rows.
+
+gt_itab2 = corresponding #( gt_itab1 ).
+gt_itab3 = corresponding #( gt_itab1 mapping  company = bukrs
+                                              plant = bukrs
+                                              vendor = lifnr ).
+gt_itab4 = corresponding #( gt_itab1 mapping  company = bukrs
+                                              plant = bukrs
+                                              vendor = lifnr except bsart ).
+
+cl_demo_output=>write( |Sourse Table| ).
+cl_demo_output=>write( gt_itab1 ).
+cl_demo_output=>write( |Target Tables| ).
+cl_demo_output=>write( gt_itab2 ).
+cl_demo_output=>write( gt_itab3 ).
+cl_demo_output=>write( gt_itab4 ).
+cl_demo_output=>display( ).
