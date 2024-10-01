@@ -1,0 +1,55 @@
+*&---------------------------------------------------------------------*
+*& Report ZST7_NEW_SYNAX_CONDITION
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+REPORT ZST7_NEW_SYNAX_CONDITION.
+
+TABLES: BSID.
+
+TYPES : BEGIN OF GTP_BSID,
+          BUKRS     TYPE BUKRS,
+          KUNNR     TYPE KUNNR,
+          AUGDT     TYPE AUGDT,
+          AUGBL     TYPE AUGBL,
+          ZUONR     TYPE DZUONR,
+          GJAHR     TYPE GJAHR,
+          BELNR     TYPE BELNR_D,
+          BUZEI     TYPE BUZEI,
+          BLART     TYPE BLART,
+          sHKZG     TYPE sHKZG,
+          DOC_INFO  TYPE CHAR30,
+          DOC_INFO1 TYPE CHAR30,
+        END OF GTP_BSID.
+
+DATA :GT_BSID TYPE STANDARD TABLE OF GTP_BSID.
+
+SELECT-OPTIONS : S_BUKRS FOR BSID-BUKRS,
+                  S_GJAHR FOR BSID-GJAHR,
+                  S_BLART FOR BSID-BLART.
+
+START-OF-SELECTION.
+
+  SELECT BUKRS KUNNR  AUGDT AUGBL ZUONR GJAHR BELNR BUZEI BLART SHKZG
+    FROM BSID INTO TABLE GT_BSID UP TO 1000 ROWS WHERE BUKRS IN S_BUKRS
+                                                    AND GJAHR IN S_GJAHR
+                                                    AND BLART IN S_blart.
+  SORT GT_BSID BY BLART SHKZG.
+  DELETE ADJACENT DUPLICATES FROM GT_BSID COMPARING BLART SHKZG.
+  LOOP AT GT_BSID ASSIGNING FIELD-SYMBOL(<FS1>).
+    <FS1>-DOC_INFO = COND #(
+    WHEN <FS1>-BLART = 'RV' AND <FS1>-SHKZG = 'H' THEN 'SD Invoice - credit'
+    WHEN <FS1>-BLART = 'RV' AND <FS1>-SHKZG = 'S' THEN 'SD Invoice - debit'
+    WHEN <FS1>-BLART = 'DZ'  THEN 'PDC'
+    WHEN <FS1>-BLART = 'BR'  THEN 'Bank receipt'
+    ELSE 'Accounting document' ).
+
+    <FS1>-DOC_INFO1 = SWITCH #( <FS1>-BLART
+    WHEN 'RV' THEN 'SD invoice'
+    WHEN 'DZ' THEN 'PDC'
+    WHEN 'BR' THEN 'Bank receipt'
+    ELSE 'Accounting document'
+    ).
+  ENDLOOP.
+
+  CL_DEMO_OUTPUT=>DISPLAY( GT_BSID ).
