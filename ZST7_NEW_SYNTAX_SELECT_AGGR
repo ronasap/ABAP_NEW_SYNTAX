@@ -1,0 +1,23 @@
+*&---------------------------------------------------------------------*
+*& Report ZST7_NEW_SYNTAX_SELECT_AGGR
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+REPORT ZST7_NEW_SYNTAX_SELECT_AGGR.
+
+
+TABLES : ZST7_RMS_ATTEND.
+
+SELECT-OPTIONS : S_userid FOR ZST7_RMS_ATTEND-USERID,
+S_DATE FOR ZST7_RMS_ATTEND-ZDATE.
+
+START-OF-SELECTION.
+
+
+  SELECT USERID, ZDATE,MIN( ZTIME )  AS IN_TIME,MAX( ZTIME ) AS OUT_TIME
+    INTO TABLE @DATA(GT_TIME)
+    FROM ZST7_RMS_ATTEND
+    WHERE USERID IN @S_USERID AND ZDATE IN @S_DATE
+    GROUP BY USERID, ZDATE ORDER BY USERID, ZDATE.
+
+CL_DEMO_OUTPUT=>DISPLAY( GT_TIME ).
