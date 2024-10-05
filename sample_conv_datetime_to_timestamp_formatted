@@ -1,0 +1,33 @@
+*&---------------------------------------------------------------------*
+*& Report ZST7_FILLTABLE
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+REPORT ZST7_FILLTABLE.
+
+DATA : LS_TIMESTAMP TYPE TZONREF-TSTAMPS,
+       DAT          TYPE SYDATUM,
+       TIM          TYPE SY-TIMLO,
+       lv_type type string.
+
+
+SELECT * FROM ZST7_RMS_ATTEN INTO TABLE @DATA(GT_DATA).
+
+LOOP AT GT_DATA ASSIGNING FIELD-SYMBOL(<FS>).
+  DAT = <FS>-ZDATE.
+  TIM = <FS>-ZTIME.
+  DATA(LV_CONV)  = | { <FS>-ZDATE DATE = ENVIRONMENT } | && | { <FS>-ZTIME TIME = ENVIRONMENT } |.
+
+  MOVE  LV_CONV TO :  <FS>-DOWNLOADDATE, <FS>-LOGDATE.
+
+  <FS>-zDOWNLOADDATE = <fs>-zdate.
+
+ENDLOOP.
+
+delete from ZST7_RMS_ATTEN.
+COMMIT WORK.
+insert ZST7_RMS_ATTEN FROM TABLE GT_DATA.
+COMMIT WORK.
+select * from ZST7_RMS_ATTEN INTO TABLE @DATA(GT_DATA_updated). 
+  
+  cl_demo_output=>display( GT_DATA_updated ).
