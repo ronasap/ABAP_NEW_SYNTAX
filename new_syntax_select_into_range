@@ -1,0 +1,17 @@
+*&---------------------------------------------------------------------*
+*& Report ZST7_NEW_SYNTAX_SEL_INTORANGE
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+REPORT ZST7_NEW_SYNTAX_SEL_INTORANGE.
+
+"Fill Range Directly from Select Statement:
+
+ SELECT @if_fsbp_const_range=>sign_include AS sign,
+       @if_fsbp_const_range=>option_equal AS option,
+       bukrs AS low,
+       CAST( @space AS CHAR( 4 ) ) AS high
+    FROM t001
+    INTO TABLE @DATA(range_of_comp_codes).
+
+   CL_DEMO_OUTPUT=>DISPLAY( range_of_comp_codes ).
