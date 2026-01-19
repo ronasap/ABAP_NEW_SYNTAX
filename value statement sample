@@ -1,0 +1,17 @@
+REPORT zst67_newsyntax_read.
+
+TABLES: bkpf.
+
+SELECTION-SCREEN BEGIN OF BLOCK b1 WITH FRAME .
+  SELECT-OPTIONS: so_bukrs FOR bkpf-bukrs,
+                  so_belnr FOR bkpf-belnr,
+                  so_gjahr FOR bkpf-gjahr.
+SELECTION-SCREEN END OF BLOCK b1.
+
+START-OF-SELECTION.
+  SELECT * FROM bkpf INTO TABLE @DATA(gt_bkpf1) WHERE bukrs IN @so_bukrs
+                                AND belnr IN @so_belnr
+                                AND gjahr IN @so_gjahr.
+
+data(gs_bkpf2) = value #( gt_bkpf1[ 1 ] OPTIONAL ).
+cl_demo_output=>display( gs_bkpf2 ).
