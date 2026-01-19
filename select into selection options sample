@@ -1,0 +1,15 @@
+*& Report ZST67_FILL_SEL_0PT
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+REPORT ZST67_FILL_SEL_0PT.
+
+data lg_matnr type matnr.
+
+SELECT-OPTIONS ls_matnr FOR lg_matnr.
+
+at selection-screen OUTPUT.
+
+SELECT 'I' AS sign, 'EQ' AS option, matnr AS low
+  FROM mara
+  INTO TABLE @ls_matnr .
