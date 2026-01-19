@@ -1,0 +1,19 @@
+In modern ABAP (7.40 and later), while you cannot directly use SELECT ... INTO to fill 
+a SELECT-OPTIONS table (range table) due to the incompatible structure, you can achieve the same result
+succinctly using Inline Declarations and the VALUE or FOR operators.
+Example: 
+*& Report ZST67_FILL_SEL_0PT
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+REPORT ZST67_FILL_SEL_0PT.
+
+data lg_matnr type matnr.
+
+SELECT-OPTIONS ls_matnr FOR lg_matnr.
+
+at selection-screen OUTPUT.
+
+SELECT 'I' AS sign, 'EQ' AS option, matnr AS low
+  FROM mara
+  INTO TABLE @ls_matnr .
