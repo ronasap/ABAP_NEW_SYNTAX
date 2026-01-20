@@ -1,0 +1,15 @@
+
+START-OF-SELECTION.
+
+SELECT * FROM spfli INTO TABLE @data(lt_spfli).
+
+
+**COUNT operator use
+count2 = REDUCE i( INIT x = 0 FOR ls IN lt_spfli
+                     WHERE ( carrid = 'LH' )
+                     NEXT x = x + 1 ).
+  WRITE:/ 'Occurence of carrid- LH', count2.
+
+  cl_demo_output=>write( lt_spfli ).
+
+  cl_demo_output=>display( ).
