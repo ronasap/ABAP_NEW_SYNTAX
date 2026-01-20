@@ -1,0 +1,32 @@
+*&---------------------------------------------------------------------*
+*& Report ZST67_NEW_SYNTAX_FILTER
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+REPORT ZST67_NEW_SYNTAX_FILTER.
+
+TYPES: BEGIN OF ty_flt,
+                  coun_from TYPE land1,
+                END OF ty_flt,
+                  tt_flt TYPE HASHED TABLE OF ty_flt WITH UNIQUE KEY coun_from.
+
+SELECT * FROM spfli INTO TABLE @data(lt_spfli1).
+
+* Fill value on filter table LT_FLT
+data(lt_flt) = VALUE tt_flt( ( coun_from = 'US' )
+                       ( coun_from = 'DE' ) ).
+* FILTERING apply on internal table LT_SPFLI1 based on filter table
+data(lt_spfli2) =   FILTER #( lt_spfli1 IN lt_flt
+                        WHERE countryfr = coun_from ).
+CALL FUNCTION 'REUSE_ALV_GRID_DISPLAY'
+  EXPORTING
+    i_callback_program = sy-repid
+    i_structure_name   = 'SPFLI'
+  TABLES
+    t_outtab           = lt_spfli1.
+CALL FUNCTION 'REUSE_ALV_GRID_DISPLAY'
+  EXPORTING
+    i_callback_program = sy-repid
+    i_structure_name   = 'SPFLI'
+  TABLES
+    t_outtab           = lt_spfli2.
